@@ -4,13 +4,13 @@ import (
 	"database/sql"
 	"flag"
 
-	// "snippet_box/internal/models"
+	"snippet_box/internal/models"
 
 	"log"
 	"net/http"
 	"os"
 
-	"github.com/Akkshatt/snippet_box/internals/models"
+	// "github.com/Akkshatt/go_snippet_box/internals/models"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -39,7 +39,6 @@ func main() {
 	app := &application{
 		errorLog: errorLog,
 		infoLog:  infoLog,
-		snippets: &models.Sn{Db:db},
 	}
 
 	mux := http.NewServeMux()
