@@ -3,14 +3,11 @@ package main
 import (
 	"database/sql"
 	"flag"
-
-	"snippet_box/internal/models"
-
-	"log"
+     "log"
 	"net/http"
 	"os"
 
-	// "github.com/Akkshatt/go_snippet_box/internals/models"
+"github.com/Akkshatt/go_snippet_box/internals/models"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -39,6 +36,7 @@ func main() {
 	app := &application{
 		errorLog: errorLog,
 		infoLog:  infoLog,
+		snippets: &models.SnippetModel{DB: db},
 	}
 
 	mux := http.NewServeMux()
@@ -56,19 +54,18 @@ func main() {
 	}
 
 	infoLog.Printf("Starting server on %s", *addr)
-	err  = srv.ListenAndServe()
+	err = srv.ListenAndServe()
 	errorLog.Fatal(err)
 
 }
 
-func openDB (dsn string )(*sql.DB, error){
-	db,err := sql.Open("mysql",dsn)
+func openDB(dsn string) (*sql.DB, error) {
+	db, err := sql.Open("mysql", dsn)
 	if err != nil {
-		return nil , err
+		return nil, err
 	}
 	if err = db.Ping(); err != nil {
-	return nil, err
+		return nil, err
 	}
 	return db, nil
-   }
-   
+}
