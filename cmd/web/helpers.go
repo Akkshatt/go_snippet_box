@@ -71,9 +71,9 @@ func (app *application) decodePostForm(r *http.Request, dst any) error {
 	return nil
 }
 func (app *application) isAuthenticated(r *http.Request) bool {
-	isAuthenticatedKey, ok := r.Context().Value(isAuthenticatedKey).(bool)
+	isAuthenticated, ok := r.Context().Value(isAuthenticatedKey).(bool)
 	if !ok {
 		return false
 	}
-	return isAuthenticatedKey
+	return isAuthenticated
 }

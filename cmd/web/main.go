@@ -1,9 +1,9 @@
 package main
 
 import (
-	// "crypto/tls"
+	"crypto/tls"
 	"database/sql"
-	// "flag"
+	"flag"
 	"github.com/Akkshatt/go_snippet_box/internals/models"
 	"github.com/alexedwards/scs/mysqlstore"
 	"github.com/alexedwards/scs/v2"
@@ -29,16 +29,14 @@ type application struct {
 
 func main() {
 
-	// addr := flag.String("addr", ":4000", "HTTP network address")
-	// dsn := flag.String("dsn", "web:pass@/snippetbox?parseTime=true", "MySQL data source name")
-	// flag.Parse()
-	addr := ":" + os.Getenv("PORT")
-	dsn := os.Getenv("DB_DSN")
+	addr := flag.String("addr", ":4000", "HTTP network address")
+	dsn := flag.String("dsn", "web:pass@/snippetbox?parseTime=true", "MySQL data source name")
+	flag.Parse()
 
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 
-	db, err := openDB(dsn)
+	db, err := openDB(*dsn)
 	if err != nil {
 		errorLog.Fatal(err)
 	}
@@ -76,26 +74,22 @@ func main() {
 	// mux.HandleFunc("/snippet/view", app.snippetView)
 	// mux.HandleFunc("/snippet/create", app.snippetCreate)
 
-	// tlsConfig := &tls.Config{
-	// 	CurvePreferences: []tls.CurveID{tls.X25519, tls.CurveP256},
-	// }
+	tlsConfig := &tls.Config{
+		CurvePreferences: []tls.CurveID{tls.X25519, tls.CurveP256},
+	}
 
 	srv := &http.Server{
-		Addr:         addr,
+		Addr:         *addr,
 		ErrorLog:     errorLog,
 		Handler:      app.routes(),
-		// TLSConfig:    tlsConfig,
+		TLSConfig:    tlsConfig,
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}
 
-	// infoLog.Printf("Starting server on %s", *addr)
-	// err = srv.ListenAndServeTLS("./tls/cert.pem", "tls/key.pem")
-	// errorLog.Fatal(err)
-
-	infoLog.Printf("Starting server on %s", addr)
-	err = srv.ListenAndServe()
+	infoLog.Printf("Starting server on %s", *addr)
+	err = srv.ListenAndServeTLS("./tls/cert.pem", "tls/key.pem")
 	errorLog.Fatal(err)
 
 }

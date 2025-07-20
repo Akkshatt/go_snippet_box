@@ -112,6 +112,10 @@ func (app *application) userSignup(w http.ResponseWriter, r *http.Request) {
 	app.render(w, http.StatusOK, "signup.tmpl.html", data)
 }
 
+
+
+
+
 func (app *application) userSignupPost(w http.ResponseWriter, r *http.Request) {
 
 	var form userSignupForm
