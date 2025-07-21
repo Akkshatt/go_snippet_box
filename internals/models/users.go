@@ -53,21 +53,27 @@ func (m *UserModel) Authenticate(email, password string) (int, error) {
 			return 0, err
 		}
 	}
-    err = bcrypt.CompareHashAndPassword(hashedPassword,[]byte(password))
-	if err != nil{
-		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword){
+	err = bcrypt.CompareHashAndPassword(hashedPassword, []byte(password))
+	if err != nil {
+		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
 			return 0, ErrInvalidCredentials
 		} else {
-			return 0,err
+			return 0, err
 		}
-	}	
-  return id, nil
+	}
+	return id, nil
 
 }
 
 func (m *UserModel) Exists(id int) (bool, error) {
- var exists bool
- stmt := "SELECT EXISIS(SELECT id FROM users WHERE id = ?)"
- err := m.DB.QueryRow(stmt,id).Scan(&exists)
- return exists,err
+	var exists bool
+	stmt := "SELECT EXISIS(SELECT id FROM users WHERE id = ?)"
+	err := m.DB.QueryRow(stmt, id).Scan(&exists)
+	return exists, err
+}
+
+type UserModelInterface interface {
+	Insert(name, email, password string) error
+	Authenticate(email, password string) (int, error)
+	Exists(id int) (bool, error)
 }
