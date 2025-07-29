@@ -49,6 +49,16 @@ func NotBlank(value string) bool {
 func MaxChars(value string, n int) bool {
 	return utf8.RuneCountInString(value) <= n
 }
+
+func MinChars(value string, n int) bool {
+	return utf8.RuneCountInString(value) >= n
+}
+
+func Matches(value string, rx *regexp.Regexp) bool {
+	return rx.MatchString(value)
+}
+
+
 func PermittedValue[T comparable](value T, permittedValues ...T) bool {
 	for i := range permittedValues {
 		if value == permittedValues[i] {
@@ -56,11 +66,4 @@ func PermittedValue[T comparable](value T, permittedValues ...T) bool {
 		}
 	}
 	return false
-}
-func MinChars(value string, n int) bool {
-	return utf8.RuneCountInString(value) >= n
-}
-
-func Matches(value string, rx *regexp.Regexp) bool {
-	return rx.MatchString(value)
 }

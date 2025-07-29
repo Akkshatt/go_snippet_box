@@ -42,9 +42,20 @@ func (app *application) recoverPanic(next http.Handler) http.Handler {
 	})
 }
 
+
+
+
+
+
+
 func (app *application) requireAuthentication(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !app.isAuthenticated(r) {
+
+
+
+
+			app.sessionManager.Put(r.Context(), "redirectPathAfterLogin", r.URL.Path)
 			http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 			return
 		}
@@ -53,6 +64,14 @@ func (app *application) requireAuthentication(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
+
+
+
+
+
+
+
+
 
 func noSurf(next http.Handler) http.Handler {
 	csrfHandler := nosurf.New(next)
@@ -67,31 +86,30 @@ func noSurf(next http.Handler) http.Handler {
 }
 
 
+
+
+
+
+
 func (app *application) authenticate(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		id := app.sessionManager.GetInt(r.Context(),"authenticatedUID")
-		if id == 0{
+		id := app.sessionManager.GetInt(r.Context(), "authenticatedUserID") // <-- FIXED key
+		if id == 0 {
 			next.ServeHTTP(w, r)
 			return
-
 		}
-     exists , err := app.users.Exists(id)
-	 if err!= nil{
-		app.serverError(w,err)
-		return 
-	 }
-	 if exists {
 
-		ctx := context.WithValue(r.Context(), isAuthenticatedKey, true)
-		r = r.WithContext(ctx)
+		exists, err := app.users.Exists(id)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
 
-	 }
-	 next.ServeHTTP(w, r)
+		if exists {
+			ctx := context.WithValue(r.Context(), isAuthenticatedKey, true)
+			r = r.WithContext(ctx)
+		}
 
-
-
-
-
+		next.ServeHTTP(w, r)
 	})
-
 }
